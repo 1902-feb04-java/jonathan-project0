@@ -4,7 +4,8 @@
 let intervalSpeed = 1000;
 let gold = 0;
 let money = 0;
-let isRevealed = false;
+let hid1Revealed = false;
+let hid2Revealed = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     // element references
@@ -12,9 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
     let mineButton = document.getElementById("mine");
 
     // hidden elements
-    let hiddenElements = document.getElementsByClassName("hid");
+    let hiddenElements = document.getElementsByClassName("startHidden");
+    let hid1 = document.getElementById("hid1");
     let sellButton = document.getElementById("sell");
     let moneyElement = document.getElementById("money");
+    let hid2 = document.getElementById("hid2");
+    let canvas = document.getElementById("canvas");
 
     // time eclapsed
     // let loadTime = Date.now();
@@ -38,12 +42,11 @@ document.addEventListener("DOMContentLoaded", () => {
         gold++;
         refreshGold();
 
-        if (!isRevealed && gold >= 10){
-            isRevealed = true;
+        // runs once, revealing hid1 (the first hidden thing)
+        if (!hid1Revealed && gold >= 10){
+            hid1Revealed = true;
             // reveal all hidden elements
-            for (let i = 0; i<hiddenElements.length; i++){
-                hiddenElements[i].style.display = "inline";
-            }
+            hid1.style.display = "inline";
             // sell button
             sellButton.addEventListener("click", () => {
                 money+=gold;
@@ -52,6 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 refreshMoney();
             });
         }
+        // runs once, revealing hid2
+        if (!hid2Revealed && money >= 20){
+            hid2Revealed = true;
+            // reveal all hidden elements
+            hid2.style.display = "inline";
+        }
     }
 
     // update gold count
@@ -59,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (gold==0){
             goldElement.textContent = `Gold: *nothing*`;
         }
-        
         goldElement.textContent = `Gold: ${gold}`;
     }
     // update money count
