@@ -60,6 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
             hid2Revealed = true;
             // reveal all hidden elements
             hid2.style.display = "inline";
+            let ctx = canvas.getContext("2d");
+            ctx.font = "30px Arial";
+            ctx.fillText("Hello World", 10, 50);
         }
     }
 
