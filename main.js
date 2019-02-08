@@ -3,14 +3,18 @@
 // global variables
 let intervalSpeed = 1000;
 let gold = 0;
+let money = 0;
 let isRevealed = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     // element references
     let goldElement = document.getElementById("goldCount");
     let mineButton = document.getElementById("mine");
-    let clearButton = document.getElementById("clear");
-    let hidden = document.getElementById("hid");
+
+    // hidden elements
+    let hiddenElements = document.getElementsByClassName("hid");
+    let sellButton = document.getElementById("sell");
+    let moneyElement = document.getElementById("money");
 
     // time eclapsed
     // let loadTime = Date.now();
@@ -23,13 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // to stop this interval:
     // clearInterval(intervalID);
 
-    // on click of button
+    // mine button
     mineButton.addEventListener("click", () => {
         gold++;
-        refreshGold();
-    });
-    clearButton.addEventListener("click", () => {
-        gold=0;
         refreshGold();
     });
     
@@ -40,7 +40,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!isRevealed && gold >= 10){
             isRevealed = true;
-            hidden.style.display = "block";
+            // reveal all hidden elements
+            for (let i = 0; i<hiddenElements.length; i++){
+                hiddenElements[i].style.display = "inline";
+            }
+            // sell button
+            sellButton.addEventListener("click", () => {
+                money+=gold;
+                gold=0;
+                refreshGold();
+                refreshMoney();
+            });
         }
     }
 
@@ -51,6 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         goldElement.textContent = `Gold: ${gold}`;
+    }
+    // update money count
+    function refreshMoney(){
+        moneyElement.textContent = `$${money}`;
     }
 
     // set interval speed
