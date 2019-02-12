@@ -7,6 +7,10 @@ let money = 0;
 let hid1Revealed = false;
 let hid2Revealed = false;
 
+// class asciiAnimation (strArray){
+
+// }
+
 document.addEventListener("DOMContentLoaded", () => {
     // element references
     let goldElement = document.getElementById("goldCount");
@@ -18,7 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let sellButton = document.getElementById("sell");
     let moneyElement = document.getElementById("money");
     let hid2 = document.getElementById("hid2");
-    let canvas = document.getElementById("canvas");
+    let pet = document.getElementById("pet");
+    let sleepListAlt = ["(-_-) zZz","(-.-) ZzZ"];
+    let sleepList = ["(˘o˘ ) zZz","(˘O˘ ) ZzZ"];
+    let sleepState = 0;
 
     // time eclapsed
     // let loadTime = Date.now();
@@ -60,9 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
             hid2Revealed = true;
             // reveal all hidden elements
             hid2.style.display = "inline";
-            let ctx = canvas.getContext("2d");
-            ctx.font = "30px Arial";
-            ctx.fillText("Hello World", 10, 50);
+        }
+        if (hid2Revealed){
+            // PET
+            sleepState = (sleepState + 1) % sleepList.length;
+            pet.textContent = sleepList[sleepState];
         }
     }
 
