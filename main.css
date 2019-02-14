@@ -5,8 +5,9 @@
     border:1px solid palegreen;
     padding: 10px;
     width: 100px;
+    height: 20px;
     background: forestgreen;
     color: palegreen;
     font-weight: bold;
-    font-family: "Arial";
+    font-family: monospace;
 }
