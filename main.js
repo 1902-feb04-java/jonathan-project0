@@ -62,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let hid2 = document.getElementById("hid2");
     let pet = document.getElementById("pet");
     let petStateElement = document.getElementById("petState");
+    var energyBar = document.getElementById("energyBar");
 
     // pet animations
     let sleepAnim = new AnimLoop(["(˘o˘ ) zZz","(˘O˘ ) ZzZ"]); // ES6 class
@@ -122,6 +123,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     petEnergy+=10;
                 }
                 else{
+                    // if energy full
+                    // change to idle
                     petStateElement.textContent = changePetState(2);
                 }
                 break;
@@ -132,6 +135,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             // NEXT FRAME OF ANIMATION
             pet.textContent = animationState[petState].next();
+            energyBar.style.width = petEnergy + '%'; 
+            //energyBar.innerHTML = petEnergy * 1 + '%';
         }
     }
 
