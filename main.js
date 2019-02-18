@@ -3,9 +3,10 @@
 // global variables
 let intervalSpeed = 1000;
 let gold = 0;
+let goldPerSecond = 1;
 let money = 0;
-let hid1Revealed = false;
-let hid2Revealed = false;
+let costOfGold = 1;
+const numButtons = 2;
 
 // pet stuff
 let petEnergy = 0;
@@ -55,11 +56,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let mineButton = document.getElementById("mine");
     
     // hidden elements
-    let hiddenElements = document.getElementsByClassName("startHidden");
-    let hid1 = document.getElementById("hid1");
+    let hid = [];
+    let hidRevealed = [];
+    for (let i=0; i<numButtons; i++){
+        hid.push(document.getElementById("hid"+i));
+        hidRevealed.push(false);
+    }
+    let goldCostElement = document.getElementById("goldCost");
     let sellButton = document.getElementById("sell");
     let moneyElement = document.getElementById("money");
-    let hid2 = document.getElementById("hid2");
+    let goldShopButton = document.getElementById("goldShopReveal");
+    let petButton = document.getElementById("petReveal");
     let pet = document.getElementById("pet");
     let petStateElement = document.getElementById("petState");
     var energyBar = document.getElementById("energyBar");
@@ -85,37 +92,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // mine button
     mineButton.addEventListener("click", () => {
-        gold++;
-        refreshGold();
+        refreshGold(1);
+    });
+    // press to reveal hid0
+    goldShopButton.onclick = () => {
+        if (gold>=10){
+            hidRevealed[0] = true;
+            // reveal all hidden elements
+            hid[0].style.display = "inline";
+            goldShopButton.style.display = "none";
+            refreshGold(-10);
+        }
+    };
+    // press to reveal hid1
+    petButton.onclick = () => {
+        if (money>=50){
+            hidRevealed[1] = true;
+            // reveal all hidden elements
+            hid[1].style.display = "inline";
+            petButton.style.display = "none";
+            refreshMoney(-50);
+            petStateElement.textContent = changePetState(0);
+        }
+    };
+    // sell button (UNDER HID0)
+    sellButton.addEventListener("click", () => {
+        refreshMoney(gold*costOfGold);
+        refreshGold(-gold);
     });
     
     // runs every second ------------------------------------------------------------------------
     function update() {
-        gold++;
-        refreshGold();
+        refreshGold(goldPerSecond);
+        costOfGold = roundToDollar(Math.random() +.5);
+        goldCostElement.textContent = costOfGold;
 
-        // runs once, revealing hid1 (the first hidden thing)
-        if (!hid1Revealed && gold >= 10){
-            hid1Revealed = true;
-            // reveal all hidden elements
-            hid1.style.display = "inline";
-            // sell button
-            sellButton.addEventListener("click", () => {
-                money+=gold;
-                gold=0;
-                refreshGold();
-                refreshMoney();
-            });
+        // runs once, revealing hid0 (the first hidden thing)
+        if (!hidRevealed[0] && gold >= 5){
+            goldShopButton.style.display = "inline";
         }
-        // runs once, revealing hid2, PET
-        if (!hid2Revealed && money >= 20){
-            hid2Revealed = true;
-            // reveal all hidden elements
-            hid2.style.display = "inline";
-            petStateElement.textContent = changePetState(0);
+        // runs once, revealing hid1, PET
+        if (!hidRevealed[1] && money > 0){
+            petButton.style.display = "inline";
+            
         }
+
         // update pet
-        if (hid2Revealed){
+        if (hidRevealed[1]){
             // PET
             switch(petState){
                 case 0: // sleeping
@@ -140,16 +163,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // update gold count
-    function refreshGold(){
+    // update gold count, adding or subtracting by an amount
+    function refreshGold(gAdd=0){
+        if (gAdd+gold >=0){
+            gold+=gAdd;
+        }
         if (gold==0){
             goldElement.textContent = `Gold: *nothing*`;
         }
         goldElement.textContent = `Gold: ${gold}`;
     }
-    // update money count
-    function refreshMoney(){
-        moneyElement.textContent = `$${money}`;
+    // update money count, adding or subtracting by an amount
+    function refreshMoney(mAdd=0){
+        if (money+mAdd >=0){
+            money+=mAdd;
+        }
+        //let dollars = roundTo
+        moneyElement.textContent = `$${roundToDollar(money)}`;
     }
 
     // set interval speed
@@ -172,3 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 });
+
+function roundToDollar(dollars){
+    return (Math.floor(100*(dollars)))/100;
+}
