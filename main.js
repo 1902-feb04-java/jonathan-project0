@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let petStateElement = document.getElementById("petState");
     let energyBar = document.getElementById("energyBar");
     let distanceTraveledElement = document.getElementById("distTraveled");
+    let hireButton = document.getElementById("hire");
 
     // pet animations
     let sleepAnim = new AnimLoop(["(˘o˘ ) zZz","(˘O˘ ) ZzZ"]); // ES6 class
@@ -143,6 +144,19 @@ document.addEventListener("DOMContentLoaded", () => {
             changePetState(2);
         }
     });
+    // hire button (UNDER HID2)
+    let hireCost = 1;
+    let goldIncrease = 1;
+    hireButton.addEventListener("click", () => {
+        if (money >= hireCost){
+            refreshMoney(-hireCost);
+            goldPerSecond += goldIncrease;
+            goldIncrease = goldIncrease * 1.5;
+            hireCost = hireCost*2;
+            hireButton.innerText = `Hire ($${roundToDollar(hireCost)},
+                +${roundToDollar(goldIncrease)} gps)`;
+        }
+    });
     
     // runs every second ------------------------------------------------------------------------
     function update() {
@@ -182,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 case 2: // idle
                 break;
                 case 3: // walking
-                petEnergy --;
+                petEnergy -= 1;
                 distanceTraveled += walkSpeed;
                 distanceTraveledElement.innerText = distanceTraveled;
                 break;
@@ -190,6 +204,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (petEnergy <= 0 ){
                 changePetState(0);
             }
+            // if not sleeping, lose a bit of energy all the time
+            if (petState > 0){
+                petEnergy -= .5;
+            }
+
             // NEXT FRAME OF ANIMATION
             pet.innerText = animationState[petState].next();
             energyBar.style.width = petEnergy + '%'; 
@@ -206,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (gold==0){
             goldElement.textContent = `Gold: *nothing*`;
         }
-        goldElement.textContent = `Gold: ${gold}`;
+        goldElement.textContent = `Gold: ${Math.floor(gold)}`;
     }
     // update money count, adding or subtracting by an amount
     function refreshMoney(mAdd=0){
