@@ -12,10 +12,11 @@ const numButtons = 2;
 let petEnergy = 0;
 let maxPetEnergy = 100;
 let petState = 0;
-let petStates = ["Sleep", "Eat", "Idle"];
+let petStates = ["Sleep", "Eat", "Idle", "Walk"];
 
+// change pet state, and return the name of that state
 function changePetState(newState){
-    if (newState >= 0 && newState<petStates.length){
+    if (newState >= 0 && newState < petStates.length){
         petState = newState;
     }
     return petStates[petState];
@@ -57,16 +58,16 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // hidden elements
     let hid = [];
+    let hidButton = [];
     let hidRevealed = [];
     for (let i=0; i<numButtons; i++){
         hid.push(document.getElementById("hid"+i));
+        hidButton.push(document.getElementById("hidButton"+i));
         hidRevealed.push(false);
     }
     let goldCostElement = document.getElementById("goldCost");
     let sellButton = document.getElementById("sell");
     let moneyElement = document.getElementById("money");
-    let goldShopButton = document.getElementById("goldShopReveal");
-    let petButton = document.getElementById("petReveal");
     let pet = document.getElementById("pet");
     let petStateElement = document.getElementById("petState");
     var energyBar = document.getElementById("energyBar");
@@ -75,7 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let sleepAnim = new AnimLoop(["(˘o˘ ) zZz","(˘O˘ ) ZzZ"]); // ES6 class
     let eatAnim = new AnimLoop(["(・—・)⊃`","(・Θ・)つ "]);
     let idleAnim = new AnimLoop(["(・_・)","(・_・)","(・_・)","(ᨆ_ᨆ)"]);
-    let animationState = [sleepAnim,eatAnim,idleAnim];
+    let walkAnim = new AnimLoop(["┌(;・-・)┘","└(;・-・)┐"]);
+    let animationState = [sleepAnim,eatAnim,idleAnim,walkAnim];
     // \xao space character
     //let sleepAnim = makeAnimation(["(˘o˘ ) zZz","(˘O˘ ) ZzZ"]); // ES5 object
     
@@ -95,23 +97,25 @@ document.addEventListener("DOMContentLoaded", () => {
         refreshGold(1);
     });
     // press to reveal hid0
-    goldShopButton.onclick = () => {
+    hidButton[0].onclick = () => {
         if (gold>=10){
             hidRevealed[0] = true;
             // reveal all hidden elements
             hid[0].style.display = "inline";
-            goldShopButton.style.display = "none";
+            hidButton[0].style.display = "none";
             refreshGold(-10);
         }
     };
     // press to reveal hid1
-    petButton.onclick = () => {
+    hidButton[1].onclick = () => {
         if (money>=50){
             hidRevealed[1] = true;
             // reveal all hidden elements
             hid[1].style.display = "inline";
-            petButton.style.display = "none";
+            hidButton[1].style.display = "none";
             refreshMoney(-50);
+
+            // initialize pet with sleeping animation
             petStateElement.textContent = changePetState(0);
         }
     };
@@ -129,11 +133,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // runs once, revealing hid0 (the first hidden thing)
         if (!hidRevealed[0] && gold >= 5){
-            goldShopButton.style.display = "inline";
+            hidButton0.style.display = "inline";
         }
         // runs once, revealing hid1, PET
         if (!hidRevealed[1] && money > 0){
-            petButton.style.display = "inline";
+            hidButton1.style.display = "inline";
             
         }
 
@@ -163,7 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // update gold count, adding or subtracting by an amount
+
+
+        // update gold count, adding or subtracting by an amount
     function refreshGold(gAdd=0){
         if (gAdd+gold >=0){
             gold+=gAdd;
@@ -203,6 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// take number, then floor to two digit places
 function roundToDollar(dollars){
     return (Math.floor(100*(dollars)))/100;
 }

@@ -12,7 +12,7 @@
     <p id=goldCount>*nothing*</p>
     <button id="mine"> Mine! </button>
     <br>
-    <button class=startHidden id=goldShopReveal>Start Gold Shop(10 gold)</button>
+    <button class=startHidden id=hidButton0>Start Gold Shop(10 gold)</button>
     <span class=startHidden id="hid0">
         <div>
                 <label> Cost of Gold:
@@ -22,14 +22,15 @@
                 <span id=money>*nothing*</span>
         </div>
     </span>
-    <button class=startHidden id=petReveal>Buy a pet (50 gold)</button>
+    <button class=startHidden id=hidButton1>Buy a pet (50 gold)</button>
     <span class=startHidden id="hid1">
         <fieldset id=petField>
             <legend id=petState> No State </legend>
             <div id=pet>(-.-)zzz</div>
         </fieldset>
-        <div class=progress>
+        <div class=progress style="position:relative">
             <div id=energyBar class=bar></div>
+            <div class=centered> Energy </div>
         </div>
     </span>
 </body>
