@@ -1,26 +1,20 @@
 "using strict";
 
 // global variables
-let intervalSpeed = 1000;
+let intervalSpeed = 50;
 let gold = 0;
 let goldPerSecond = 1;
 let money = 0;
 let costOfGold = 1;
-const numButtons = 2;
+const numButtons = 3;
 
 // pet stuff
 let petEnergy = 0;
 let maxPetEnergy = 100;
 let petState = 0;
 let petStates = ["Sleep", "Eat", "Idle", "Walk"];
-
-// change pet state, and return the name of that state
-function changePetState(newState){
-    if (newState >= 0 && newState < petStates.length){
-        petState = newState;
-    }
-    return petStates[petState];
-}
+let distanceTraveled = 0;
+let walkSpeed = 1;
 
 // ES6 class
 class AnimLoop {
@@ -68,9 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let goldCostElement = document.getElementById("goldCost");
     let sellButton = document.getElementById("sell");
     let moneyElement = document.getElementById("money");
+    let exploreButton = document.getElementById("exploreButton");
     let pet = document.getElementById("pet");
     let petStateElement = document.getElementById("petState");
-    var energyBar = document.getElementById("energyBar");
+    let energyBar = document.getElementById("energyBar");
+    let distanceTraveledElement = document.getElementById("distTraveled");
 
     // pet animations
     let sleepAnim = new AnimLoop(["(˘o˘ ) zZz","(˘O˘ ) ZzZ"]); // ES6 class
@@ -116,13 +112,36 @@ document.addEventListener("DOMContentLoaded", () => {
             refreshMoney(-50);
 
             // initialize pet with sleeping animation
-            petStateElement.textContent = changePetState(0);
+            changePetState(0);
+        }
+    };
+    // press to reveal
+    hidButton[2].onclick = () => {
+        if (money>=50){
+            hidRevealed[2] = true;
+            // reveal all hidden elements
+            hid[2].style.display = "inline";
+            hidButton[2].style.display = "none";
+            refreshMoney(-50);
         }
     };
     // sell button (UNDER HID0)
     sellButton.addEventListener("click", () => {
         refreshMoney(gold*costOfGold);
         refreshGold(-gold);
+    });
+    // explore button (UNDER HID1)
+    exploreButton.addEventListener("click", () => {
+        // if idle
+        if (petState == 2){
+            // set state to explore
+            changePetState(3);
+        }
+        // if exploring
+        else if (petState == 3){
+            // set to idle
+            changePetState(2);
+        }
     });
     
     // runs every second ------------------------------------------------------------------------
@@ -131,14 +150,17 @@ document.addEventListener("DOMContentLoaded", () => {
         costOfGold = roundToDollar(Math.random() +.5);
         goldCostElement.textContent = costOfGold;
 
-        // runs once, revealing hid0 (the first hidden thing)
+        // runs once, revealing the hid0 button (SELL GOLD)
         if (!hidRevealed[0] && gold >= 5){
-            hidButton0.style.display = "inline";
+            hidButton[0].style.display = "inline";
         }
-        // runs once, revealing hid1, PET
+        // runs once, revealing the hid1 button (PET)
         if (!hidRevealed[1] && money > 0){
-            hidButton1.style.display = "inline";
-            
+            hidButton[1].style.display = "inline";
+        }
+        // runs once, revealing the hid1 button (PET)
+        if (!hidRevealed[2] && distanceTraveled > 0){
+            hidButton[2].style.display = "inline";
         }
 
         // update pet
@@ -152,24 +174,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 else{
                     // if energy full
                     // change to idle
-                    petStateElement.textContent = changePetState(2);
+                    changePetState(2);
                 }
                 break;
                 case 1: // eating
                 break;
                 case 2: // idle
                 break;
+                case 3: // walking
+                petEnergy --;
+                distanceTraveled += walkSpeed;
+                distanceTraveledElement.innerText = distanceTraveled;
+                break;
+            }
+            if (petEnergy <= 0 ){
+                changePetState(0);
             }
             // NEXT FRAME OF ANIMATION
-            pet.textContent = animationState[petState].next();
+            pet.innerText = animationState[petState].next();
             energyBar.style.width = petEnergy + '%'; 
             //energyBar.innerHTML = petEnergy * 1 + '%';
         }
     }
 
-
-
-        // update gold count, adding or subtracting by an amount
+    // FUNCTIONS ------------------------------------------------------
+    // update gold count, adding or subtracting by an amount
     function refreshGold(gAdd=0){
         if (gAdd+gold >=0){
             gold+=gAdd;
@@ -187,6 +216,20 @@ document.addEventListener("DOMContentLoaded", () => {
         //let dollars = roundTo
         moneyElement.textContent = `$${roundToDollar(money)}`;
     }
+    // change pet state, and change the petState element text to reflect it
+    function changePetState(newState){
+        if (newState >= 0 && newState < petStates.length){
+            if (petState === 3){
+                exploreButton.innerHTML = "Explore";
+            }
+            petState = newState;
+            if (petState === 3){
+                exploreButton.innerHTML = "Stop Exploring";
+            }
+        }
+        petStateElement.textContent = petStates[petState];
+    }
+
 
     // set interval speed
     function setInterval(speed){
