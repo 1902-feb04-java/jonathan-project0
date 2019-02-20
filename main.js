@@ -1,12 +1,12 @@
 "using strict";
 
 // global variables
-let intervalSpeed = 50;
+let intervalSpeed = 200;
 let gold = 0;
 let goldPerSecond = 1;
 let money = 0;
 let costOfGold = 1;
-const numButtons = 3;
+const numButtons = 5;
 
 // pet stuff
 let petEnergy = 0;
@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let energyBar = document.getElementById("energyBar");
     let distanceTraveledElement = document.getElementById("distTraveled");
     let hireButton = document.getElementById("hire");
+    let eatButton = document.getElementById("eat");
 
     // pet animations
     let sleepAnim = new AnimLoop(["(˘o˘ ) zZz","(˘O˘ ) ZzZ"]); // ES6 class
@@ -126,6 +127,26 @@ document.addEventListener("DOMContentLoaded", () => {
             refreshMoney(-50);
         }
     };
+    // press to reveal
+    hidButton[3].onclick = () => {
+        if (money>=100){
+            hidRevealed[3] = true;
+            // reveal all hidden elements
+            hid[3].style.display = "inline";
+            hidButton[3].style.display = "none";
+            refreshMoney(-100);
+        }
+    };
+    // press to reveal
+    hidButton[4].onclick = () => {
+        if (money>=200){
+            hidRevealed[4] = true;
+            // reveal all hidden elements
+            hid[4].style.display = "inline";
+            hidButton[4].style.display = "none";
+            refreshMoney(-200);
+        }
+    };
     // sell button (UNDER HID0)
     sellButton.addEventListener("click", () => {
         refreshMoney(gold*costOfGold);
@@ -153,8 +174,15 @@ document.addEventListener("DOMContentLoaded", () => {
             goldPerSecond += goldIncrease;
             goldIncrease = goldIncrease * 1.5;
             hireCost = hireCost*2;
-            hireButton.innerText = `Hire ($${roundToDollar(hireCost)},
-                +${roundToDollar(goldIncrease)} gps)`;
+            hireButton.innerText = `Hire ($${roundToDollar(hireCost)}, +${Math.floor(goldIncrease)} gps)`;
+        }
+    });
+    // eat button (UNDER HID4)
+    let eatCost = 15;
+    eatButton.addEventListener("click", () => {
+        if (money >= 15 && petState>0){
+            refreshMoney(-eatCost);
+            changePetState(1);
         }
     });
     
@@ -172,9 +200,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!hidRevealed[1] && money > 0){
             hidButton[1].style.display = "inline";
         }
-        // runs once, revealing the hid1 button (PET)
+        // runs once, revealing the hid2 button (HIRE)
         if (!hidRevealed[2] && distanceTraveled > 0){
             hidButton[2].style.display = "inline";
+        }
+        // // runs once, revealing the hid3 button (PET MINE)
+        // if (!hidRevealed[3] && distanceTraveled > 100){
+        //     hidButton[3].style.display = "inline";
+        // }
+        // runs once, revealing the hid4 button (FOOD)
+        if (!hidRevealed[4] && distanceTraveled > 200){
+            hidButton[4].style.display = "inline";
         }
 
         // update pet
@@ -182,24 +218,32 @@ document.addEventListener("DOMContentLoaded", () => {
             // PET
             switch(petState){
                 case 0: // sleeping
-                if (petEnergy < maxPetEnergy){
-                    petEnergy+=10;
-                }
-                else{
-                    // if energy full
-                    // change to idle
-                    changePetState(2);
-                }
-                break;
+                    if (petEnergy < maxPetEnergy){
+                        petEnergy+=5;
+                    }
+                    else{
+                        // if energy full
+                        // change to idle
+                        changePetState(2);
+                    }
+                    break;
                 case 1: // eating
-                break;
+                    if (petEnergy < maxPetEnergy){
+                        petEnergy+=20;
+                    }
+                    else{
+                        // if energy full
+                        // change to idle
+                        changePetState(2);
+                    }
+                    break;
                 case 2: // idle
-                break;
+                    break;
                 case 3: // walking
-                petEnergy -= 1;
-                distanceTraveled += walkSpeed;
-                distanceTraveledElement.innerText = distanceTraveled;
-                break;
+                    petEnergy -= 1;
+                    distanceTraveled += walkSpeed;
+                    distanceTraveledElement.innerText = distanceTraveled;
+                    break;
             }
             if (petEnergy <= 0 ){
                 changePetState(0);
